@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Useless Facts</string>
+
+    <string name="next_fact_button_text">Get next Fact</string>
+</resources>
