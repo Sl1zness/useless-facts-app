@@ -29,8 +29,12 @@ import com.uselessfacts.Language
 import com.uselessfacts.R
 import com.uselessfacts.ui.theme.UselessFactsTheme
 import com.uselessfacts.viewmodel.UselessFactsViewModel
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
-// TODO: add fact source
 @Composable
 fun UselessFacts() {
     val viewModel = hiltViewModel<UselessFactsViewModel>()
@@ -48,11 +52,21 @@ fun UselessFacts() {
         ) {
             UselessFactText(
                 fact = viewModel.currentUselessFact,
-                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_xsmall))
             )
-            NextFactButton(onClick = {
-                viewModel.getNextFact()
-            })
+            UselessFactSource(
+                source = viewModel.currentFactSource,
+                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_large))
+            )
+            NextFactButton(vm = viewModel,
+                onClick = {
+                    viewModel.getNextFact()
+                    viewModel.enableButton(false)
+                    CoroutineScope(CoroutineName("")).launch {
+                        delay(1.seconds)
+                        viewModel.enableButton(true)
+                    }
+                })
         }
     }
 }
@@ -130,12 +144,26 @@ fun UselessFactText(fact: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NextFactButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun UselessFactSource(source: String, modifier: Modifier = Modifier) {
+    Text(
+        text = source,
+        fontSize = 20.sp,
+        lineHeight = 20.sp,
+        color = colorResource(id = R.color.light_grey),
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.Light,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun NextFactButton(vm: UselessFactsViewModel, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
         colors = ButtonDefaults.buttonColors(
             containerColor = colorResource(id = R.color.black),
             contentColor = colorResource(id = R.color.light_grey)
         ),
+        enabled = vm.isButtonEnabled,
         onClick = onClick,
         modifier = modifier
     ) {

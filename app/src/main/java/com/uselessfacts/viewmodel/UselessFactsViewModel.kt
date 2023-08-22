@@ -32,6 +32,12 @@ class UselessFactsViewModel @Inject constructor(val retrofitInstance: UselessFac
     var currentLanguageId by mutableStateOf(Language.English.id)
         private set
 
+    var currentFactSource by mutableStateOf("")
+        private set
+
+    var isButtonEnabled by mutableStateOf(true)
+        private set
+
     init {
         getDailyFact()
     }
@@ -56,6 +62,7 @@ class UselessFactsViewModel @Inject constructor(val retrofitInstance: UselessFac
 
             if (response.isSuccessful && response.body() != null) {
                 currentUselessFact = response.body()!!.text
+                currentFactSource = "Source: " + response.body()!!.source
             }
             else Log.e(TAG, "Response not successful")
         }
@@ -75,6 +82,7 @@ class UselessFactsViewModel @Inject constructor(val retrofitInstance: UselessFac
 
             if (response.isSuccessful && response.body() != null) {
                 currentUselessFact = "Today's fact: " + response.body()!!.text
+                currentFactSource = "Source: " + response.body()!!.source
             }
             else Log.e(TAG, "Response not successful")
         }
@@ -86,5 +94,9 @@ class UselessFactsViewModel @Inject constructor(val retrofitInstance: UselessFac
 
     fun changeDropdownHeader(header: String) {
         dropdownHeader = header
+    }
+
+    fun enableButton(isEnabled: Boolean) {
+        isButtonEnabled = isEnabled
     }
 }
